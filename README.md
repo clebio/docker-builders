@@ -22,6 +22,14 @@ Gitlab takes a few minutes to start and configure
 itself. Incidentally, this means Redis and Postgres are ready by the
 time it runs.
 
+## Load Balancers
+
+We can use either Nginx or HA Proxy as a load balancer, and put two
+instances of Gitlab behind either as a minimal "balanced" web
+layer. Use git tags to switch to either:
+
+    git checkout haproxy
+    git checkout nginx
 
 [gitlab_ce]: https://hub.docker.com/r/gitlab/gitlab-ce/
 [Postgres]: https://hub.docker.com/_/postgres/
