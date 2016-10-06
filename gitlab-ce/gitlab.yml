@@ -2,12 +2,14 @@ version: '2'
 
 services:
   web:
-    image: 'gitlab/gitlab-ce:latest'
+    build: .
     restart: always
     hostname: 'gitlab.example.com'
     environment:
+      GITLAB_HTTPS: "true"
+      SSL_SELF_SIGNED: "true"
       GITLAB_OMNIBUS_CONFIG: |
-        external_url 'http://localhost'
+        external_url 'http://here.local'
         postgresql['enable'] = false
         gitlab_rails['db_host'] = "postgres"
         gitlab_rails['db_username'] = "${DB_USER}"
@@ -16,39 +18,16 @@ services:
         redis['enable'] = false
         gitlab_rails['redis_host'] = "redis"
         gitlab_rails['redis_port'] = 6379
-    ports:
-      - '80:80'
-      - '443:443'
-      - '22:22'
+        nginx['ssl_certificate'] = "/etc/ssl/gitlab.crt"
+        nginx['ssl_certificate_key'] = "/etc/ssl/gitlab.key"
+        gitlab_rails['internal_api_url'] = 'http://127.0.0.1'
+
+    expose:
+      - 80
+      - 443
+      - 22
     volumes:
       - 'gitlab_config:/etc/gitlab'
       - 'gitlab_logs:/var/log/gitlab'
       - 'gitlab_data:/var/opt/gitlab'
-    links:
-      - postgres
-      - redis
     env_file: docker.env
-
-  postgres:
-    image: postgres
-    env_file: docker.env
-    environment:
-      PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_PASSWORD: "${DB_PASS}"
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_DB: "${DB_NAME}"
-    volumes:
-      - vdb:/var/lib/postgresql/data/pgdata
-
-  redis:
-    image: redis
-
-volumes:
-  vdb:
-    external: true
-  gitlab_config:
-    external: true
-  gitlab_logs:
-    external: true
-  gitlab_data:
-    external: true

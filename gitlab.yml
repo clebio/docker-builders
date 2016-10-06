@@ -1,0 +1,59 @@
+version: '2'
+
+services:
+  syslog:
+    build: rsyslog
+
+  lb:
+    build: haproxy
+    ports:
+      - "80:80"
+      - "22:22"
+      - "443:443"
+      - "411:411"
+    links:
+      - web1
+      - web2
+      - syslog
+
+  web1:
+    extends:
+      file: gitlab-ce/gitlab.yml
+      service: web
+    links:
+      - postgres
+      - redis
+
+  web2:
+    extends:
+      file: gitlab-ce/gitlab.yml
+      service: web
+    links:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres
+    env_file: gitlab-ce/docker.env
+    environment:
+      PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_PASSWORD: "${DB_PASS}"
+      POSTGRES_USER: "${DB_USER}"
+      POSTGRES_DB: "${DB_NAME}"
+    volumes:
+      - vdb:/var/lib/postgresql/data/pgdata
+
+  redis:
+    image: redis
+
+volumes:
+  vdb:
+    external: true
+  gitlab_config:
+    external: true
+  gitlab_logs:
+    external: true
+  gitlab_data:
+    external: true
+  logs:
+    external: true
