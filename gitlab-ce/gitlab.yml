@@ -10,24 +10,28 @@ services:
       SSL_SELF_SIGNED: "true"
       GITLAB_OMNIBUS_CONFIG: |
         external_url 'http://here.local'
+
         postgresql['enable'] = false
         gitlab_rails['db_host'] = "postgres"
         gitlab_rails['db_username'] = "${DB_USER}"
         gitlab_rails['db_password'] = "${DB_PASS}"
         gitlab_rails['db_database'] = "${DB_NAME}"
+        gitlab_rails['auto_migrate'] = "false"
+        gitlab_rails['db_encoding'] = 'utf8'
+
         redis['enable'] = false
         gitlab_rails['redis_host'] = "redis"
         gitlab_rails['redis_port'] = 6379
+
         nginx['ssl_certificate'] = "/etc/ssl/gitlab.crt"
         nginx['ssl_certificate_key'] = "/etc/ssl/gitlab.key"
         gitlab_rails['internal_api_url'] = 'http://127.0.0.1'
 
-    expose:
-      - 80
-      - 443
-      - 22
+    # expose:
+    #   - 80
+    #   - 443
+    #   - 22
     volumes:
       - 'gitlab_config:/etc/gitlab'
       - 'gitlab_logs:/var/log/gitlab'
       - 'gitlab_data:/var/opt/gitlab'
-    env_file: docker.env

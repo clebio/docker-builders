@@ -1,0 +1,14 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      # PGDATA: /var/lib/postgresql/data/pgdata
+      POSTGRES_USER: foo
+      POSTGRES_PASSWORD: bar
+      POSTGRES_DB: blah
+    ports: 
+      - 5432:5432
+    # volumes:
+    #   - vdb:/var/lib/postgresql/data/pgdata

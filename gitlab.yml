@@ -31,29 +31,28 @@ services:
     links:
       - postgres
       - redis
+    depends_on:
+      - web1
 
   postgres:
     image: postgres
-    env_file: gitlab-ce/docker.env
     environment:
       PGDATA: /var/lib/postgresql/data/pgdata
-      POSTGRES_PASSWORD: "${DB_PASS}"
-      POSTGRES_USER: "${DB_USER}"
-      POSTGRES_DB: "${DB_NAME}"
+      POSTGRES_PASSWORD: bar
+      POSTGRES_USER: foo
+      POSTGRES_DB: gitlabhq_production
     volumes:
       - vdb:/var/lib/postgresql/data/pgdata
+
+  nfs:
+    image: itsthenetwork/nfs-server-alpine
 
   redis:
     image: redis
 
 volumes:
   vdb:
-    external: true
   gitlab_config:
-    external: true
   gitlab_logs:
-    external: true
   gitlab_data:
-    external: true
   logs:
-    external: true
